@@ -22,6 +22,7 @@ if __name__ == "__main__":
         "temperature":0.6,
         "top_p": 0.9,
         "dataset": "https://huggingface.co/datasets/talkmap/telecom-conversation-corpus/resolve/main/telecom_200k.csv",
+        "samples": 20,
         "system_prompt": system_prompt,
         "prompts": prompts,
     }

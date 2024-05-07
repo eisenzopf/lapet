@@ -13,6 +13,7 @@ class ModelHandler:
         self.system_prompt = config["system_prompt"]
         self.prompts = config["prompts"]
         self.dataset = self.load_dataset(config["dataset"])
+        self.samples = config["samples"]
         self.batch_size = config["batch_size"]
         self.max_new_tokens = config["max_new_tokens"]
         self.temperature = config["temperature"]
