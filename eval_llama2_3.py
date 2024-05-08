@@ -28,7 +28,9 @@ if __name__ == "__main__":
     }
 
     huggingface_hub.login()
+    # replace
     handler = LlamaModelHandler("meta-llama/Llama-2-7b-chat-hf", config)
+    # replace
     texts = ["What is the capital of France?", "Tell me about the latest advancements in AI.", "Who wrote the book '1984'?"]
     #responses = handler.generate_output() # should be a dataframe (model_id, eval_name, data_id, prompt, output, generation_time, filtered_output, llm_eval, human_eval)
     responses = handler.generate_output(texts)

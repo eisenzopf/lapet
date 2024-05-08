@@ -24,8 +24,9 @@ class ModelHandler:
         """Loads model and tokenizer, should be overridden by subclasses to specify model type."""
         raise NotImplementedError("Subclasses should implement this method.")
 
-    def generate_output(self, texts):
+    def generate_output(self):
         """Generates responses from the Llama model for given texts."""
+        texts = self.dataset
         inputs = self.tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length)
         inputs = {key: value.to(self.device) for key, value in inputs.items()}
         with torch.no_grad():
