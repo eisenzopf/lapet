@@ -9,7 +9,7 @@ class ModelHandler:
     def __init__(self, model_id, config):
         self.model_id = model_id
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        #self.tokenizer, self.model = self.load_model_and_tokenizer()
+        self.tokenizer, self.model = self.load_model_and_tokenizer()
         self.system_prompt = config["system_prompt"]
         self.prompts = config["prompts"]
         self.models = config["models"]
@@ -20,7 +20,6 @@ class ModelHandler:
         self.top_p = config["top_p"]
         self.max_length = config["max_length"]
         self.dataset = self.load_dataset(config["dataset"])
-        #self.results = self.prepare_output()
 
     def generate_output(self, text):
         """Generates an output for a given input"""
