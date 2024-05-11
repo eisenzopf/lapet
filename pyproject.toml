@@ -30,5 +30,5 @@ dependencies = [
 dynamic = ["version", "readme"]
 
 [tool.setuptools.dynamic]
-version = {attr = "my_package.VERSION"}
+version = {attr = "llm-eval.VERSION"}
 readme = {file = ["README.md"]}
