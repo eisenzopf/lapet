@@ -9,7 +9,6 @@ class ModelHandler:
     def __init__(self, model_id, config):
         self.model_id = model_id
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.tokenizer, self.model = self.load_model_and_tokenizer()
         self.system_prompt = config["system_prompt"]
         self.prompts = config["prompts"]
         self.models = config["models"]
@@ -30,15 +29,6 @@ class ModelHandler:
         responses = [self.tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
         responses = ' '.join(responses)
         return responses
-
-    def process_dataset(self):
-        df = self.prepare_output()
-        for index, row in df.iterrows():
-            for col in df.columns:
-                if col.endswith('.input'):
-                    output_col = col.replace('.input', '.output')
-                    df.at[index, output_col] = self.generate_output(row[col])
-        return df
 
     def load_dataset(self, dataset):
         """Loads an external CSV dataset via URL and prepares a dataframe for storing the output"""
@@ -67,10 +57,12 @@ class ModelHandler:
         model = AutoModelForCausalLM.from_pretrained(self.model_id, eos_token_id=terminators)
         model.to(self.device)
         return tokenizer, model
-    
-    def prepare_input(self):
-        """Prepares the model input for inference based on """
-        print()
+
+    def post_process_output(self, output):
+        """Extracts and returns content based on the predefined pattern from generated output."""
+        pattern = re.compile(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
+        match = re.search(pattern, output)
+        return {match.group(1): match.group(2)} if match else output
     
     def prepare_output(self):
         """Create a DataFrame with the required columns based on the list of dictionaries"""
@@ -93,14 +85,19 @@ class ModelHandler:
                     row[output_column_name] = ""
                 rows.append(row)
         df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
-        #df.to_csv('data_output.csv', index=False)
         return df
 
-    def post_process_output(self, output):
-        """Extracts and returns content based on the predefined pattern from generated output."""
-        pattern = re.compile(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
-        match = re.search(pattern, output)
-        return {match.group(1): match.group(2)} if match else output
+    def process_dataset(self):
+        df = self.prepare_output()
+        for model_name, group in df.groupby('model'):
+            self.tokenizer, self.model = self.load_model_and_tokenizer()
+            for index, row in df.iterrows():
+                for col in df.columns:
+                    if col.endswith('.input'):
+                        output_col = col.replace('.input', '.output')
+                        df.at[index, output_col] = self.generate_output(row[col])
+            self.unload_model()
+        return df
 
     def unload_model(self):
         # Logic to unload model from memory
