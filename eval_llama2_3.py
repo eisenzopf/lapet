@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import huggingface_hub
-from llm_eval import LlamaModelHandler
+from llm_eval import ModelHandler, LlamaModelHandler
 
 """Base class for handling different models with common interface for generating outputs."""
 system_prompt = '''The following is a conversation between a customer service agent who works at Union Mobile and a customer who needs support.
@@ -40,6 +40,6 @@ config = {
 }
 
 huggingface_hub.login()
-handler = LlamaModelHandler(config)
+handler = ModelHandler(config)
 responses = handler.process_dataset()
 responses.to_csv('updated_data_output.csv', index=False)

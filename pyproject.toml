@@ -27,5 +27,8 @@ dependencies = [
     "autoawq",
     'importlib-metadata; python_version<"3.10"',
 ]
-dynamic = ["version"]
+dynamic = ["version", "readme"]
 
+[tool.setuptools.dynamic]
+version = {attr = "my_package.VERSION"}
+readme = {file = ["README.md"]}

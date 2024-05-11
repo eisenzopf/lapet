@@ -95,12 +95,12 @@ class ModelHandler:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
                         df.at[index, output_col] = self.generate_output(row[col])
-            self.unload_model()
+            self.unload_model(model_name)
         return df
 
-    def unload_model(self):
+    def unload_model(self, model_id):
         # Logic to unload model from memory
         del self.model, self.tokenizer
         import torch
         torch.cuda.empty_cache()
-        print(f"{self.model_id} unloaded from memory")
+        print(f"{model_id} unloaded from memory")
