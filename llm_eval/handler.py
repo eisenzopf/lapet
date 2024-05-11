@@ -20,13 +20,9 @@ class ModelHandler:
         self.top_p = config["top_p"]
         self.max_length = config["max_length"]
 
-    def load_model_and_tokenizer(self):
-        """Loads model and tokenizer, should be overridden by subclasses to specify model type."""
-        raise NotImplementedError("Subclasses should implement this method.")
-
     def generate_output(self):
         """Generates responses from the Llama model for given texts."""
-        texts = self.dataset
+        texts = self.dataset.values()
         inputs = self.tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length)
         inputs = {key: value.to(self.device) for key, value in inputs.items()}
         with torch.no_grad():
