@@ -27,8 +27,4 @@ dependencies = [
     "autoawq",
     'importlib-metadata; python_version<"3.10"',
 ]
-dynamic = ["version", "readme"]
-
-[tool.setuptools.dynamic]
-version = {attr = "llm-eval.VERSION"}
-readme = {file = ["README.md"]}
+dynamic = ["version"]
