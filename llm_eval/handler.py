@@ -45,16 +45,16 @@ class ModelHandler:
           conversation_texts[id] = text_accumulator.strip()
         return conversation_texts
 
-    def load_model_and_tokenizer(self):
+    def load_model_and_tokenizer(self, model_id):
         """Specific loader for Llama model and tokenizer."""
-        tokenizer = AutoTokenizer.from_pretrained(self.model_id)
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
         terminators = [
           tokenizer.eos_token_id,
           tokenizer.convert_tokens_to_ids("<|eot_id|>")
         ]
-        model = AutoModelForCausalLM.from_pretrained(self.model_id, eos_token_id=terminators)
+        model = AutoModelForCausalLM.from_pretrained(model_id, eos_token_id=terminators)
         model.to(self.device)
         return tokenizer, model
 
@@ -90,7 +90,7 @@ class ModelHandler:
     def process_dataset(self):
         df = self.prepare_output()
         for model_name, group in df.groupby('model'):
-            self.tokenizer, self.model = self.load_model_and_tokenizer()
+            self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
             for index, row in df.iterrows():
                 for col in df.columns:
                     if col.endswith('.input'):
