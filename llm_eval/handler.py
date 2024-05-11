@@ -6,8 +6,7 @@ import pandas as pd
 import numpy as np
 
 class ModelHandler:
-    def __init__(self, model_id, config):
-        self.model_id = model_id
+    def __init__(self, config):
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.system_prompt = config["system_prompt"]
         self.prompts = config["prompts"]
@@ -56,6 +55,7 @@ class ModelHandler:
         ]
         model = AutoModelForCausalLM.from_pretrained(model_id, eos_token_id=terminators)
         model.to(self.device)
+        print(model_id + " loaded.")
         return tokenizer, model
 
     def post_process_output(self, output):
@@ -79,9 +79,7 @@ class ModelHandler:
                 for prompt in self.prompts:
                     input_column_name = prompt["name"] + '.input'
                     output_column_name = prompt["name"] + '.output'
-                    # Construct the input value by combining system prompt and column-specific text
                     row[input_column_name] = f"{self.system_prompt}\n\n{self.dataset[data_id]}\n\n{prompt['prompt']}"
-                    # Placeholder for outputs as examples
                     row[output_column_name] = ""
                 rows.append(row)
         df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
@@ -90,6 +88,7 @@ class ModelHandler:
     def process_dataset(self):
         df = self.prepare_output()
         for model_name, group in df.groupby('model'):
+            print("loading " + model_name + ".")
             self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
             for index, row in df.iterrows():
                 for col in df.columns:

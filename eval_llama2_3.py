@@ -40,6 +40,6 @@ config = {
 }
 
 huggingface_hub.login()
-handler = LlamaModelHandler("meta-llama/Llama-2-7b-chat-hf", config)
+handler = LlamaModelHandler(config)
 responses = handler.process_dataset()
 responses.to_csv('updated_data_output.csv', index=False)
