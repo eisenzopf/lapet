@@ -31,6 +31,7 @@ class ModelHandler:
 
     def load_dataset(self, dataset):
         """Loads an external CSV dataset via URL and prepares a dataframe for storing the output"""
+        print("Loading dataset...")
         df = pd.read_csv(dataset)
         df = pd.DataFrame(df)
         conversation_ids = df['conversation_id'].unique()
@@ -85,17 +86,39 @@ class ModelHandler:
         df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
         return df
 
-    def process_dataset(self):
+    """def process_dataset(self):
         df = self.prepare_output()
         for model_name, group in df.groupby('model'):
+            print("Running tests for " + model_name)
             print("loading " + model_name + ".")
             self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
             for index, row in df.iterrows():
+                print("Generating outputs for " + row['id'])
                 for col in df.columns:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
                         output = self.generate_output(row[col])
                         output = self.post_process_output(output[len(row[col])-1:])
+                        df.at[index, output_col] = output
+            self.unload_model(model_name)
+        return df"""
+    
+    def process_dataset(self):
+        df = self.prepare_output()
+        for model_name, group in df.groupby('model'):
+            print(f"Loading {model_name}.")
+            self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
+            for index, row in group.iterrows():  # Process the correct group rather than the entire df
+                print(f"Generating outputs for {row['id']}")
+                for col in group.columns:
+                    if col.endswith('.input'):
+                        output_col = col.replace('.input', '.output')
+                        output = self.generate_output(row[col])
+                        # Check if the output starts with the input text
+                        if output.startswith(row[col]):
+                            output = self.post_process_output(output[len(row[col]):])
+                        else:
+                            output = self.post_process_output(output)  # Handle case where output does not start with input
                         df.at[index, output_col] = output
             self.unload_model(model_name)
         return df
