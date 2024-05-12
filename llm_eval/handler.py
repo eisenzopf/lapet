@@ -85,23 +85,6 @@ class ModelHandler:
                 rows.append(row)
         df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
         return df
-
-    """def process_dataset(self):
-        df = self.prepare_output()
-        for model_name, group in df.groupby('model'):
-            print("Running tests for " + model_name)
-            print("loading " + model_name + ".")
-            self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
-            for index, row in df.iterrows():
-                print("Generating outputs for " + row['id'])
-                for col in df.columns:
-                    if col.endswith('.input'):
-                        output_col = col.replace('.input', '.output')
-                        output = self.generate_output(row[col])
-                        output = self.post_process_output(output[len(row[col])-1:])
-                        df.at[index, output_col] = output
-            self.unload_model(model_name)
-        return df"""
     
     def process_dataset(self):
         df = self.prepare_output()
@@ -114,7 +97,6 @@ class ModelHandler:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
                         output = self.generate_output(row[col])
-                        # Check if the output starts with the input text
                         if output.startswith(row[col]):
                             output = self.post_process_output(output[len(row[col]):])
                         else:
