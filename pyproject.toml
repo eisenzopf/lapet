@@ -22,7 +22,7 @@ dependencies = [
     "numpy",
     "torch>=2.3.0",
     "huggingface_hub>=0.23.0",
-    "transformers==4.40.0",
+    "transformers==4.40.2",
     "auto-gptq",
     "autoawq",
     'importlib-metadata; python_version<"3.10"',
