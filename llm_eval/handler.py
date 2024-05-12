@@ -89,7 +89,7 @@ class ModelHandler:
     def process_dataset(self):
         df = self.prepare_output()
         for model_name, group in df.groupby('model'):
-            print(f"Loading {model_name}.")
+            print(f"Loading {model_name}...")
             self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
             for index, row in group.iterrows():  # Process the correct group rather than the entire df
                 print(f"Generating outputs for {row['id']}")
@@ -97,10 +97,7 @@ class ModelHandler:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
                         output = self.generate_output(row[col])
-                        if output.startswith(row[col]):
-                            output = self.post_process_output(output[len(row[col]):])
-                        else:
-                            output = self.post_process_output(output)  # Handle case where output does not start with input
+                        output = output[len(row[col]):]
                         df.at[index, output_col] = output
             self.unload_model(model_name)
         return df
