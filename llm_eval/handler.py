@@ -35,8 +35,8 @@ class ModelHandler:
             ]
             outputs = self.model.generate(**inputs, eos_token_id=terminators, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
         else:
-            outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, num_return_sequences=1)
-            #outputs = self.model.generate(inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
+            #outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, num_return_sequences=1)
+            outputs = self.model.generate(inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
         responses = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         return prompt, responses
 
@@ -109,7 +109,7 @@ class ModelHandler:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
                         prompt, output = self.generate_output(row[col])
-                        #output = output[len(prompt):]
+                        output = output[len(prompt):]
                         df.at[index, output_col] = output
             self.unload_model(model_name)
         return df
