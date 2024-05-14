@@ -26,7 +26,7 @@ class ModelHandler:
             {"role": "user", "content": text },
         ]
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.device)
+        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.model.device)
         outputs = ""
         if self.current_model == 'meta-llama/Meta-Llama-3-8B-Instruct':
             terminators = [
@@ -38,6 +38,17 @@ class ModelHandler:
             outputs = self.model.generate(inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
         responses = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         return prompt, responses
+    
+        """
+        prompt = "Write a haiku about terminators."
+        chat = [{'content': prompt, 'role': 'user'}]
+        chat_tokens = tokenizer.apply_chat_template(chat, tokenize=True, add_generation_prompt=True, return_tensors='pt').to(model.device)
+
+        new_chat_tokens = model.generate(chat_tokens, do_sample=False, max_new_tokens=128)
+        new_chat_str = tokenizer.decode(new_chat_tokens[0], skip_special_tokens=True)
+        print (new_chat_str)
+        """
+
 
     def load_dataset(self, dataset):
         """Loads an external CSV dataset via URL and prepares a dataframe for storing the output"""
