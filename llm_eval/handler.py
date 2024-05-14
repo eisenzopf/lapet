@@ -26,7 +26,7 @@ class ModelHandler:
             {"role": "user", "content": text },
         ]
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.model.device)
+        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length)
         outputs = ""
         if self.current_model == 'meta-llama/Meta-Llama-3-8B-Instruct':
             terminators = [
