@@ -21,7 +21,13 @@ class ModelHandler:
 
     def generate_output(self, text):
         """Generates an output for a given input"""
-        inputs = self.tokenizer(text, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length)
+        # create the prompt with the template
+        messages = [
+            {"role": "system", "content": self.system_prompt },
+            {"role": "user", "content": text },
+        ]
+        prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length)
         inputs = {key: value.to(self.device) for key, value in inputs.items()}
         with torch.no_grad():
             outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
