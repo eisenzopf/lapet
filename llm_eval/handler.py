@@ -27,12 +27,9 @@ class ModelHandler:
             {"role": "user", "content": text },
         ]
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length)
-        inputs = {key: value.to(self.device) for key, value in inputs.items()}
-        with torch.no_grad():
-            outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
-        responses = [self.tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
-        responses = ' '.join(responses)
+        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.device)
+        outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
+        responses = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         return prompt, responses
 
     def load_dataset(self, dataset):
