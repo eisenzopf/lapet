@@ -33,7 +33,7 @@ class ModelHandler:
             outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
         responses = [self.tokenizer.decode(output, skip_special_tokens=True) for output in outputs]
         responses = ' '.join(responses)
-        return responses
+        return prompt, responses
 
     def load_dataset(self, dataset):
         """Loads an external CSV dataset via URL and prepares a dataframe for storing the output"""
@@ -102,8 +102,8 @@ class ModelHandler:
                 for col in group.columns:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
-                        output = self.generate_output(row[col])
-                        output = output[len(row[col]):]
+                        prompt, output = self.generate_output(row[col])
+                        output = output[len(prompt):]
                         df.at[index, output_col] = output
             self.unload_model(model_name)
         return df
