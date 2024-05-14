@@ -33,23 +33,12 @@ class ModelHandler:
             self.tokenizer.eos_token_id,
             self.tokenizer.convert_tokens_to_ids("<|eot_id|>")
             ]
-            outputs = self.model.generate(inputs, eos_token_id=terminators, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
+            outputs = self.model.generate(**inputs, eos_token_id=terminators, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
         else:
-            outputs = self.model.generate(inputs, max_new_tokens=self.max_new_tokens, num_return_sequences=1)
+            outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, num_return_sequences=1)
             #outputs = self.model.generate(inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
         responses = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         return prompt, responses
-    
-        """
-        prompt = "Write a haiku about terminators."
-        chat = [{'content': prompt, 'role': 'user'}]
-        chat_tokens = tokenizer.apply_chat_template(chat, tokenize=True, add_generation_prompt=True, return_tensors='pt').to(model.device)
-
-        new_chat_tokens = model.generate(chat_tokens, do_sample=False, max_new_tokens=128)
-        new_chat_str = tokenizer.decode(new_chat_tokens[0], skip_special_tokens=True)
-        print (new_chat_str)
-        """
-
 
     def load_dataset(self, dataset):
         """Loads an external CSV dataset via URL and prepares a dataframe for storing the output"""
