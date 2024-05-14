@@ -21,14 +21,21 @@ class ModelHandler:
 
     def generate_output(self, text):
         """Generates an output for a given input"""
-        # create the prompt with the template
         messages = [
             {"role": "system", "content": self.system_prompt },
             {"role": "user", "content": text },
         ]
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.device)
-        outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
+        
+        if self.current_model == 'meta-llama/Meta-Llama-3-8B-Instruct':
+            terminators = [
+            self.tokenizer.eos_token_id,
+            self.tokenizer.convert_tokens_to_ids("<|eot_id|>")
+            ]
+            outputs = self.modelgenerate(inputs, eos_token_id=terminators, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
+        else:
+            outputs = self.model.generate(inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
         responses = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         return prompt, responses
 
@@ -92,6 +99,7 @@ class ModelHandler:
     def process_dataset(self):
         df = self.prepare_output()
         for model_name, group in df.groupby('model'):
+            self.current_model = model_name
             print(f"Loading {model_name}...")
             self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
             for index, row in group.iterrows():  # Process the correct group rather than the entire df
