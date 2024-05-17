@@ -1,3 +1,7 @@
+# test files
+compare.csv
+judging_results.csv
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
