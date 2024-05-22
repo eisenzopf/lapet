@@ -74,14 +74,17 @@ explanation: <explain the reasons for your choice>
                     explanation = line.split('explanation:')[1].strip()
 
             # Save the results to the dataframe
-            if preference == 1:
+            if "1" in preference:
                 self.dataset.at[index, 'preference'] = comp1_model
                 preference = comp1_model
-            elif preference == 2:
+            elif "2" in preference:
                 self.dataset.at[index, 'preference'] = comp2_model
-                preference = comp1_model
-            self.dataset.at[index, 'explanation'] = explanation
+                preference = comp2_model
+            elif "tie" in preference:
+                self.dataset.at[index, 'preference'] = "tie"
+                preference = "tie"
 
+            self.dataset.at[index, 'explanation'] = explanation
             print(f"preference: {preference}\nexplanation: {explanation}")
             print("-----------------")
     
