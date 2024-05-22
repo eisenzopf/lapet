@@ -35,19 +35,24 @@ class LLMJudge:
             # flip a coin to determine which model is participant 1 or 2
             flip = random.randint(0, 1)
             if flip == 0:
-                comp1 = row['model1']
-                comp2 = row['model2']
+                comp1_model = row['model1']
+                comp1_value = row['comp1.value']
+                comp2_model = row['model2']
+                comp2_value = row['comp2.value']
             else:
-                comp1 = row['model2']
-                comp2 = row['model1']
+                comp1_model = row['model2']
+                comp1_value = row['comp2.value']
+                comp2_model = row['model1']
+                comp2_value = row['comp1.value']
+
             entries = f"""Ok here is the instruction that we provided to both participants:
 Welcome to our customer service analysis tool. You will be provided with transcripts of conversations between customers and service agents. Your task is to follow the instruction and output a response from each conversation. Focus on provided concise outputs that could be useful for follow-up actions and ensure that your outputs are directly relevant to the discussed topics. This prompt is meant to ensure that you understand the essence of the customer's concerns and can articulate it succinctly in a structured format that is easy for both human and machine processing. Continue with this approach for the upcoming conversations.
 
 {row['instruction']}
 
-Ok, here are the answers from the two participants:
-participant 1: {row['comp1.name']}: {row['comp1.value']}
-participant 2: {row['comp2.name']}: {row['comp2.value']}
+Ok, here are the answers from the two participants for {row['test.name']}:
+participant 1: {comp1_model}: {comp1_value}
+participant 2: {comp2_model}: {comp2_value}
 
 Pick the participant's response that you prefer the most and explain why. Please format your output in YAML like:
 preference: <1 | 2 | tie >
@@ -70,11 +75,11 @@ explanation: <explain the reasons for your choice>
 
             # Save the results to the dataframe
             if preference == 1:
-                self.dataset.at[index, 'preference'] = comp1
-                preference = comp1
+                self.dataset.at[index, 'preference'] = comp1_model
+                preference = comp1_model
             elif preference == 2:
-                self.dataset.at[index, 'preference'] = comp2
-                preference = comp2
+                self.dataset.at[index, 'preference'] = comp2_model
+                preference = comp1_model
             self.dataset.at[index, 'explanation'] = explanation
 
             print(f"preference: {preference}\nexplanation: {explanation}")
