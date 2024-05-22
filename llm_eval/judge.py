@@ -2,6 +2,7 @@ import itertools
 import pandas as pd
 import numpy as np
 from openai import OpenAI
+import random
 import re
 
 class LLMJudge:
@@ -31,6 +32,14 @@ class LLMJudge:
         )
 
         for index, row in self.dataset.iterrows():
+            # flip a coin to determine which model is participant 1 or 2
+            flip = random.randint(0, 1)
+            if flip == 0:
+                comp1 = row['model1']
+                comp2 = row['model2']
+            else:
+                comp1 = row['model2']
+                comp2 = row['model1']
             entries = f"""Ok here is the instruction that we provided to both participants:
 Welcome to our customer service analysis tool. You will be provided with transcripts of conversations between customers and service agents. Your task is to follow the instruction and output a response from each conversation. Focus on provided concise outputs that could be useful for follow-up actions and ensure that your outputs are directly relevant to the discussed topics. This prompt is meant to ensure that you understand the essence of the customer's concerns and can articulate it succinctly in a structured format that is easy for both human and machine processing. Continue with this approach for the upcoming conversations.
 
@@ -60,7 +69,12 @@ explanation: <explain the reasons for your choice>
                     explanation = line.split('explanation:')[1].strip()
 
             # Save the results to the dataframe
-            self.dataset.at[index, 'preference'] = preference
+            if preference == 1:
+                self.dataset.at[index, 'preference'] = comp1
+                preference = comp1
+            elif preference == 2:
+                self.dataset.at[index, 'preference'] = comp2
+                preference = comp2
             self.dataset.at[index, 'explanation'] = explanation
 
             print(f"preference: {preference}\nexplanation: {explanation}")
@@ -77,12 +91,11 @@ explanation: <explain the reasons for your choice>
                     row1 = group[group['model'] == model1]
                     row2 = group[group['model'] == model2]
                     if not row1.empty and not row2.empty:
-                        comp1_name = col.replace('.output', '')
-                        comp1_value = self.extract_output_by_name(comp1_name, row1[col].values[0])
-                        comp2_name = col.replace('.output', '')
-                        comp2_value = self.extract_output_by_name(comp2_name, row2[col].values[0])
-                        instruction_name = comp1_name + '.input'
+                        test_name = col.replace('.output', '')
+                        comp1_value = self.extract_output_by_name(test_name, row1[col].values[0])
+                        comp2_value = self.extract_output_by_name(test_name, row2[col].values[0])
+                        instruction_name = test_name + '.input'
                         instruction_value = row1[instruction_name].values[0]
-                        comparison_rows.append([id_, instruction_value, model1, model2, comp1_name, comp1_value, comp2_name, comp2_value, None, None])
-        comparison_df = pd.DataFrame(comparison_rows, columns=['id', 'instruction', 'model1', 'model2', 'comp1.name', 'comp1.value', 'comp2.name', 'comp2.value', 'preference', 'explanation'])
+                        comparison_rows.append([id_, instruction_value, model1, model2, test_name, comp1_value, comp2_value, None, None])
+        comparison_df = pd.DataFrame(comparison_rows, columns=['id', 'instruction', 'model1', 'model2', 'test.name', 'comp1.value', 'comp2.value', 'preference', 'explanation'])
         return comparison_df
