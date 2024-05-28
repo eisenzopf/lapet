@@ -108,6 +108,7 @@ class ModelHandler:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
                         prompt, output = self.generate_output(row[col])
+                        output = self.post_process_output(output)
                         df.at[index, output_col] = output
             self.unload_model(model_name)
         return df
