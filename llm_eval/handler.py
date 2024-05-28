@@ -71,7 +71,8 @@ class ModelHandler:
 
     def post_process_output(self, prompt, output):
         """Extracts and returns content based on the predefined pattern from generated output."""
-        #output = output[len(prompt)-1:]
+        if self.current_model == 'meta-llama/Llama-2-7b-chat-hf':
+            output = output[len(prompt)-1:]
         pattern = re.compile(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
         match = re.search(pattern, output)
         return {match.group(1): match.group(2)} if match else output
