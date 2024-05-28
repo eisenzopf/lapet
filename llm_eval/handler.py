@@ -71,7 +71,7 @@ class ModelHandler:
 
     def post_process_output(self, prompt, output):
         """Extracts and returns content based on the predefined pattern from generated output."""
-        output = output[len(prompt)-1:]
+        #output = output[len(prompt)-1:]
         pattern = re.compile(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
         match = re.search(pattern, output)
         return {match.group(1): match.group(2)} if match else output
