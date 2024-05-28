@@ -69,8 +69,9 @@ class ModelHandler:
         print(model_id + " loaded.")
         return tokenizer, model
 
-    def post_process_output(self, output):
+    def post_process_output(self, prompt, output):
         """Extracts and returns content based on the predefined pattern from generated output."""
+        output = output[len(prompt)-1:]
         pattern = re.compile(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
         match = re.search(pattern, output)
         return {match.group(1): match.group(2)} if match else output
@@ -108,7 +109,7 @@ class ModelHandler:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
                         prompt, output = self.generate_output(row[col])
-                        output = self.post_process_output(output)
+                        output = self.post_process_output(prompt, output)
                         df.at[index, output_col] = output
             self.unload_model(model_name)
         return df
