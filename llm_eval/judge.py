@@ -13,15 +13,11 @@ class LLMJudge:
     def extract_output_by_name(self, name, value):
         if isinstance(value, float) and np.isnan(value):
             return ''
-        
-        match1 = re.search(r'### Output ###(.*)', value, re.DOTALL)
+        match1 = re.search(rf'{name}\s?:\s*.*?(\w+.*)', value, re.DOTALL)
         if match1:
-            new_value = match1.group(1)
-            match2 = re.search(rf'{name}\s?:\s*.*?(\w+.*)', new_value, re.DOTALL)
-            if match2:
-                return match2.group(1).strip()
-            else:
-                return new_value
+            return match1.group(1).strip()
+        else:
+            return value
         return ''
 
     def evaluate(self):
