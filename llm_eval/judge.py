@@ -13,7 +13,9 @@ class LLMJudge:
     def extract_output_by_name(self, name, value):
         if isinstance(value, float) and np.isnan(value):
             return ''
-        match1 = re.search(rf'{name}\s?:\s*.*?(\w+.*)', value, re.DOTALL)
+        #match1 = re.search(rf'{name}\s?:\s*.*?(\w+.*)', value, re.DOTALL)
+        #match1 = re.search(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
+        match1 = re.search(r'\{\s*"' + name + r'"\s*:\s*"(.+?)"\s*\}')
         if match1:
             return match1.group(1).strip()
         else:
