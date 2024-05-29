@@ -74,7 +74,7 @@ class ModelHandler:
         if self.current_model == 'meta-llama/Llama-2-7b-chat-hf':
             output = output[len(prompt)-1:]
         pattern = re.compile(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
-        match = re.findall(pattern, "target_text")[-1]
+        match = re.findall(pattern, output)[-1]
         return {match.group(1): match.group(2)} if match else output
     
     def prepare_output(self):
