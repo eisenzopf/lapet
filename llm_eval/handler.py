@@ -75,6 +75,7 @@ class ModelHandler:
             output = output[len(prompt)-1:]
         pattern = re.compile(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
         matches = re.findall(pattern, output)
+        last_match = None
         if matches:
             last_match = matches[-1]
         return {last_match[0]: last_match[1]} if last_match else output
