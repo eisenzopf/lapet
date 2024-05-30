@@ -21,15 +21,16 @@ class LLMJudge:
         else:
             return value
 
+
     def evaluate(self):
         client = OpenAI(
-        organization=self.config['judge']['organization'],
-        project=self.config['judge']['project'],
-        api_key=self.config['judge']['api_key']
+            organization=self.config['judge']['organization'],
+            project=self.config['judge']['project'],
+            api_key=self.config['judge']['api_key']
         )
 
         for index, row in self.dataset.iterrows():
-            # flip a coin to determine which model is participant 1 or 2
+            # Flip a coin to determine which model is participant 1 or 2
             flip = random.randint(0, 1)
             if flip == 0:
                 comp1_model = row['model1']
@@ -43,7 +44,7 @@ class LLMJudge:
                 comp2_value = row['comp1.value']
 
             entries = f"""Ok here is the instruction that we provided to both participants:
-Welcome to our customer service analysis tool. You will be provided with transcripts of conversations between customers and service agents. Your task is to follow the instruction and output a response from each conversation. Focus on provided concise outputs that could be useful for follow-up actions and ensure that your outputs are directly relevant to the discussed topics. This prompt is meant to ensure that you understand the essence of the customer's concerns and can articulate it succinctly in a structured format that is easy for both human and machine processing. Continue with this approach for the upcoming conversations.
+Welcome to our customer service analysis tool. You will be provided with transcripts of conversations between customers and service agents. Your task is to follow the instruction and output a response from each conversation. Focus on providing concise outputs that could be useful for follow-up actions and ensure that your outputs are directly relevant to the discussed topics. This prompt is meant to ensure that you understand the essence of the customer's concerns and can articulate it succinctly in a structured format that is easy for both human and machine processing. Continue with this approach for the upcoming conversations.
 
 {row['instruction']}
 
@@ -57,7 +58,7 @@ explanation: <explain the reasons for your choice>
 """
             messages = [
                 {"role": "system", "content": "You are going to pick an answer from two different participants based on an instruction. You should pick the entry that follows instructions the best."},
-                {"role": "user", "content": entries }
+                {"role": "user", "content": entries}
             ]
             completion = client.chat.completions.create(model="gpt-4o", messages=messages)
             completion_content = completion.choices[0].message.content
@@ -70,16 +71,18 @@ explanation: <explain the reasons for your choice>
                 elif line.startswith('explanation:'):
                     explanation = line.split('explanation:')[1].strip()
 
+            # Check if preference is None before using it
+            if preference is None:
+                print(f"Preference is None for index {index}")
+                continue
+
             # Save the results to the dataframe
             if "1" in preference:
                 self.dataset.at[index, 'preference'] = comp1_model
-                preference = comp1_model
             elif "2" in preference:
                 self.dataset.at[index, 'preference'] = comp2_model
-                preference = comp2_model
             elif "tie" in preference:
                 self.dataset.at[index, 'preference'] = "tie"
-                preference = "tie"
 
             self.dataset.at[index, 'explanation'] = explanation
             print(f"preference: {preference}\nexplanation: {explanation}")
