@@ -6,9 +6,9 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llm-eval"
-version = "0.6.10"
+version = "0.7.0"
 authors = [
-    {name = "Jonathan Eisenzopf", email = "jonathan.eisenzopf@talkmap.com"},
+    {name = "Jonathan Eisenzopf", email = "ironbraid74@gmail.com"},
 ]
 description = "Library that makes it easier to evaluate the quality of LLM outputs"
 readme = "README.md"

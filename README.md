@@ -44,7 +44,6 @@ You will need an A100 or H100 with at least 40GB of RAM to run LLM-Eval locally.
 - We randomly select conversations from a large synthetic dataset, which causes the results to vary from one run to another.
 - Eval-LLM is only configured to work with one kind of dataset (conversations) until we add support for others.
 
-
 ## Planned Features
 
 - Create task templates for testing different kinds of task groups beyond conversation tasks
