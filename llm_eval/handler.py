@@ -74,16 +74,17 @@ class ModelHandler:
         df = pd.DataFrame(columns=column_names)
 
         for model_name in self.models.items():
-            for data_id in self.dataset.items():
+            for data_id, data_value in self.dataset.items():  
                 row = {'id': data_id, 'model': model_name}
                 for prompt in self.prompts:
                     input_column_name = prompt["name"] + '.input'
                     output_column_name = prompt["name"] + '.output'
-                    row[input_column_name] = f"### Conversation ###\n{self.dataset[data_id]}\n\n### Instruction ###\n{prompt['prompt']}\n\n### Output ###\n"
+                    row[input_column_name] = f"### Conversation ###\n{data_value}\n\n### Instruction ###\n{prompt['prompt']}\n\n### Output ###\n" 
                     row[output_column_name] = ""
                 rows.append(row)
         df = pd.concat([df, pd.DataFrame(rows)], ignore_index=True)
         return df
+
     
     def process_dataset(self):
         df = self.prepare_output()
