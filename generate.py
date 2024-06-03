@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import huggingface_hub
-from llm_eval import ModelHandler, Llama2ModelHandler, Llama3ModelHandler  
+from llm_evalator import ModelHandler, Llama2ModelHandler, Llama3ModelHandler  
 
 config = {
     'batch_size': 3,

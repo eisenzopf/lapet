@@ -5,7 +5,7 @@ requires = [
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "llm-eval"
+name = "llm-evaluator"
 version = "0.7.0"
 authors = [
     {name = "Jonathan Eisenzopf", email = "ironbraid74@gmail.com"},

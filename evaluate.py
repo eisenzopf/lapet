@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from llm_eval import LLMJudge
+from llm_evaluator import LLMJudge
 
 config = {
     "judge": {
