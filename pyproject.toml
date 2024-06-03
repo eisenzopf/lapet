@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lapet"
-version = "0.7.2"
+version = "0.7.3"
 authors = [
     {name = "Jonathan Eisenzopf", email = "ironbraid74@gmail.com"},
 ]
@@ -29,3 +29,7 @@ dependencies = [
     "openai",
     'importlib-metadata; python_version<"3.10"',
 ]
+
+[project.urls]
+Homepage = "https://github.com/eisenzopf/lapet"
+Issues = "https://github.com/eisenzopf/lapet/issues"

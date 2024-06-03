@@ -57,3 +57,4 @@ You will need an A100 or H100 with at least 40GB of RAM to run LaPET locally. Al
 - Add performance metrics (memory, tokens/second)
 - Add option to utilize cloud LLM endpoints like Groq, Cloudflare, etc.
 - Add commercial models like Cohere, Anthropic, Google, Mistral
+- Support for using multiple GPUs
