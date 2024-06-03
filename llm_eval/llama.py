@@ -3,7 +3,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from .handler import ModelHandler
-class Llama3ModelHandler(ModelHandler):
+class Llama3ModelHandler():
       def load_model_and_tokenizer(self, device, model_id):
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         if tokenizer.pad_token is None:
@@ -18,7 +18,7 @@ class Llama3ModelHandler(ModelHandler):
         return tokenizer, model
       
 from .handler import ModelHandler
-class Llama2ModelHandler(ModelHandler):
+class Llama2ModelHandler():
       def load_model_and_tokenizer(self, device, model_id):
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         if tokenizer.pad_token is None:
