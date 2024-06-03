@@ -4,6 +4,9 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from .handler import ModelHandler
 class Llama3ModelHandler(ModelHandler):
+      def __init__(self, device):
+        self.device = device
+
       def load_model_and_tokenizer(self, model_id):
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         if tokenizer.pad_token is None:

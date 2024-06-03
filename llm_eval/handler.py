@@ -90,7 +90,8 @@ class ModelHandler:
         for model_name, model_handler in self.models.items():
             self.current_model = model_name
             print(f"Loading {model_name}...")
-            self.tokenizer, self.model = model_handler().load_model_and_tokenizer(model_name)
+            handler = model_handler(self.device)
+            self.tokenizer, self.model = handler.load_model_and_tokenizer(model_name)
             for index, row in df[df['model'] == model_name].iterrows(): 
                 print(f"Generating outputs for {row['id']}")
                 for col in df.columns:
