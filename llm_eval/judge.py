@@ -7,20 +7,15 @@ import re
 
 class LLMJudge:
     def __init__(self, config, df):
-        self.dataset = self.prepare_dataset(df)
         self.config = config
+        self.dataset = self.prepare_dataset(df)
 
-    def extract_output_by_name(self, name, value):
+    def extract_output_by_name(self, value):
         if isinstance(value, float) and np.isnan(value):
             return ''
         pattern = re.compile(r'\{\s*["\'](.+?)["\']\s*:\s*["\'](.+?)["\']\s*\}')
         matches = re.findall(pattern, value)
-        if matches:
-            last_match = matches[-1]
-            return last_match[1].strip()
-        else:
-            return value
-
+        return matches[-1][1].strip() if matches else value
 
     def evaluate(self):
         client = OpenAI(
@@ -30,18 +25,11 @@ class LLMJudge:
         )
 
         for index, row in self.dataset.iterrows():
-            # Flip a coin to determine which model is participant 1 or 2
             flip = random.randint(0, 1)
-            if flip == 0:
-                comp1_model = row['model1']
-                comp1_value = row['comp1.value']
-                comp2_model = row['model2']
-                comp2_value = row['comp2.value']
-            else:
-                comp1_model = row['model2']
-                comp1_value = row['comp2.value']
-                comp2_model = row['model1']
-                comp2_value = row['comp1.value']
+            comp1_model, comp1_value, comp2_model, comp2_value = (
+                (row['model1'], row['comp1.value'], row['model2'], row['comp2.value']) if flip == 0 else
+                (row['model2'], row['comp2.value'], row['model1'], row['comp1.value'])
+            )
 
             entries = f"""Ok here is the instruction that we provided to both participants:
 Welcome to our customer service analysis tool. You will be provided with transcripts of conversations between customers and service agents. Your task is to follow the instruction and output a response from each conversation. Focus on providing concise outputs that could be useful for follow-up actions and ensure that your outputs are directly relevant to the discussed topics. This prompt is meant to ensure that you understand the essence of the customer's concerns and can articulate it succinctly in a structured format that is easy for both human and machine processing. Continue with this approach for the upcoming conversations.
@@ -63,47 +51,44 @@ explanation: <explain the reasons for your choice>
             completion = client.chat.completions.create(model="gpt-4o", messages=messages)
             completion_content = completion.choices[0].message.content
 
-            # Parse the completion content
-            preference, explanation = None, None
-            for line in completion_content.split('\n'):
-                if line.startswith('preference:'):
-                    preference = line.split('preference:')[1].strip()
-                elif line.startswith('explanation:'):
-                    explanation = line.split('explanation:')[1].strip()
+            preference, explanation = self.parse_completion(completion_content)
 
-            # Check if preference is None before using it
-            if preference is None:
-                print(f"Preference is None for index {index}")
-                continue
+            if preference:
+                self.dataset.at[index, 'preference'] = (
+                    comp1_model if "1" in preference else
+                    comp2_model if "2" in preference else
+                    "tie"
+                )
+                self.dataset.at[index, 'explanation'] = explanation
+                print(f"preference: {preference}\nexplanation: {explanation}")
+                print("-----------------")
 
-            # Save the results to the dataframe
-            if "1" in preference:
-                self.dataset.at[index, 'preference'] = comp1_model
-            elif "2" in preference:
-                self.dataset.at[index, 'preference'] = comp2_model
-            elif "tie" in preference:
-                self.dataset.at[index, 'preference'] = "tie"
+    def parse_completion(self, completion_content):
+        preference, explanation = None, None
+        for line in completion_content.split('\n'):
+            if line.startswith('preference:'):
+                preference = line.split('preference:')[1].strip()
+            elif line.startswith('explanation:'):
+                explanation = line.split('explanation:')[1].strip()
+        return preference, explanation
 
-            self.dataset.at[index, 'explanation'] = explanation
-            print(f"preference: {preference}\nexplanation: {explanation}")
-            print("-----------------")
-    
     def prepare_dataset(self, df):
         output_columns = [col for col in df.columns if col.endswith('.output')]
         comparison_rows = []
+
         for id_, group in df.groupby('id'):
             models = group['model'].unique()
-            model_pairs = list(itertools.combinations(models, 2))
+            model_pairs = itertools.combinations(models, 2)
+
             for model1, model2 in model_pairs:
                 for col in output_columns:
-                    row1 = group[group['model'] == model1]
-                    row2 = group[group['model'] == model2]
+                    row1, row2 = group[group['model'] == model1], group[group['model'] == model2]
                     if not row1.empty and not row2.empty:
                         test_name = col.replace('.output', '')
-                        comp1_value = self.extract_output_by_name(test_name, row1[col].values[0])
-                        comp2_value = self.extract_output_by_name(test_name, row2[col].values[0])
-                        instruction_name = test_name + '.input'
-                        instruction_value = row1[instruction_name].values[0]
+                        comp1_value = self.extract_output_by_name(row1[col].values[0])
+                        comp2_value = self.extract_output_by_name(row2[col].values[0])
+                        instruction_value = row1[f'{test_name}.input'].values[0]
                         comparison_rows.append([id_, instruction_value, model1, model2, test_name, comp1_value, comp2_value, None, None])
+
         comparison_df = pd.DataFrame(comparison_rows, columns=['id', 'instruction', 'model1', 'model2', 'test.name', 'comp1.value', 'comp2.value', 'preference', 'explanation'])
         return comparison_df

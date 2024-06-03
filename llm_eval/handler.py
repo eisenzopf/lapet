@@ -28,13 +28,6 @@ class ModelHandler:
         prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.device)
         outputs = ""
-        """if self.current_model == 'meta-llama/Meta-Llama-3-8B-Instruct':
-            terminators = [
-            self.tokenizer.eos_token_id,
-            self.tokenizer.convert_tokens_to_ids("<|eot_id|>")
-            ]
-            outputs = self.model.generate(**inputs, eos_token_id=terminators, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
-        else:"""
         outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
         responses = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
         return prompt, responses
@@ -56,23 +49,15 @@ class ModelHandler:
         return conversation_texts
 
     def load_model_and_tokenizer(self, model_id):
-        """Specific loader for Llama model and tokenizer."""
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
-        terminators = [
-          tokenizer.eos_token_id,
-          tokenizer.convert_tokens_to_ids("<|eot_id|>")
-        ]
-        model = AutoModelForCausalLM.from_pretrained(model_id, eos_token_id=terminators)
+        model = AutoModelForCausalLM.from_pretrained(model_id)
         model.to(self.device)
         print(model_id + " loaded.")
         return tokenizer, model
 
     def post_process_output(self, prompt, output):
-        """Extracts and returns content based on the predefined pattern from generated output."""
-        if self.current_model == 'meta-llama/Llama-2-7b-chat-hf':
-            output = output[len(prompt)-1:]
         pattern = re.compile(r'\{\s*"(.+?)"\s*:\s*"(.+?)"\s*\}')
         matches = re.findall(pattern, output)
         last_match = None
@@ -81,7 +66,6 @@ class ModelHandler:
         return {last_match[0]: last_match[1]} if last_match else output
     
     def prepare_output(self):
-        """Create a DataFrame with the required columns based on the list of dictionaries"""
         rows = []
         column_names = ['id', 'model']  # start with 'id' and 'model' columns
         for prompt in self.prompts:
@@ -89,8 +73,8 @@ class ModelHandler:
             column_names.append(prompt["name"] + '.output')
         df = pd.DataFrame(columns=column_names)
 
-        for model_name, model_handler in self.models.items():
-            for data_id, text in self.dataset.items():
+        for model_name in self.models.items():
+            for data_id in self.dataset.items():
                 row = {'id': data_id, 'model': model_name}
                 for prompt in self.prompts:
                     input_column_name = prompt["name"] + '.input'
@@ -106,7 +90,8 @@ class ModelHandler:
         for model_name, group in df.groupby('model'):
             self.current_model = model_name
             print(f"Loading {model_name}...")
-            self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
+            self.tokenizer, self.model = self.models[model_name].load_model_and_tokenizer(model_name)
+            #self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
             for index, row in group.iterrows():  # Process the correct group rather than the entire df
                 print(f"Generating outputs for {row['id']}")
                 for col in group.columns:

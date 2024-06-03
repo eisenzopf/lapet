@@ -11,7 +11,7 @@ config = {
     }
 }
 
-df = pd.read_csv('data.csv')
+df = pd.read_csv('eval_data.csv')
 llm_judge = LLMJudge(config, df)
 llm_judge.evaluate()
-llm_judge.dataset.to_csv("judging_results.csv")
+#llm_judge.dataset.to_csv("judging_results.csv")
