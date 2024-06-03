@@ -4,10 +4,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 from .handler import ModelHandler
 class Llama3ModelHandler(ModelHandler):
-      def __init__(self, device):
-        self.device = device
-
-      def load_model_and_tokenizer(self, model_id):
+      def load_model_and_tokenizer(self, device, model_id):
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
@@ -16,18 +13,18 @@ class Llama3ModelHandler(ModelHandler):
           tokenizer.convert_tokens_to_ids("<|eot_id|>")
         ]
         model = AutoModelForCausalLM.from_pretrained(model_id, eos_token_id=terminators)
-        model.to(self.device)
+        model.to(device)
         print(model_id + " loaded.")
         return tokenizer, model
       
 from .handler import ModelHandler
 class Llama2ModelHandler(ModelHandler):
-      def load_model_and_tokenizer(self, model_id):
+      def load_model_and_tokenizer(self, device, model_id):
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
         model = AutoModelForCausalLM.from_pretrained(model_id)
-        model.to(self.device)
+        model.to(device)
         print(model_id + " loaded.")
         return tokenizer, model
       
