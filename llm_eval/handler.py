@@ -88,14 +88,13 @@ class ModelHandler:
     
     def process_dataset(self):
         df = self.prepare_output()
-        for model_name, group in df.groupby('model'):
+        for model_name, model_handler in self.models.items():  # Unpack the tuple correctly
             self.current_model = model_name
             print(f"Loading {model_name}...")
-            self.tokenizer, self.model = self.models[model_name].load_model_and_tokenizer(model_name)
-            #self.tokenizer, self.model = self.load_model_and_tokenizer(model_name)
-            for index, row in group.iterrows():  # Process the correct group rather than the entire df
+            self.tokenizer, self.model = model_handler.load_model_and_tokenizer(model_name)
+            for index, row in df[df['model'] == model_name].iterrows():  # Process the correct group rather than the entire df
                 print(f"Generating outputs for {row['id']}")
-                for col in group.columns:
+                for col in df.columns:
                     if col.endswith('.input'):
                         output_col = col.replace('.input', '.output')
                         prompt, output = self.generate_output(row[col])
@@ -103,6 +102,7 @@ class ModelHandler:
                         df.at[index, output_col] = output
             self.unload_model(model_name)
         return df
+
 
     def unload_model(self, model_id):
         del self.model, self.tokenizer
