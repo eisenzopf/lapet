@@ -1,18 +1,18 @@
-# LLM-Eval Overview
+# LaPET Overview
 
 Public LLM leaderboards like Huggingface are great for getting a general idea of which LLM models perform well. However, this is not useful when we need to evaluate models for specific LLM generative tasks. The LMSys Chatbot Arena does provide interesting results but is too general.
 
-LLM-Eval is targeted at users that need to know how well a model will work for a specific task like summarizing a customer service call or putting together an action plan to resolve a customer issue or analyzing a spreadsheet for inconsistencies. These real world tasks require an evaluation method that is easy to utilize for any kind of user, whether you want to create your own LLM benchmark or use data from ours.
+LaPET stands for Language Pairwise Evaluation Toolkit and is targeted at users that need to know how well a model will work for a specific task like summarizing a customer service call or putting together an action plan to resolve a customer issue or analyzing a spreadsheet for inconsistencies. These real world tasks require an evaluation method that is easy to utilize for any kind of user, whether you want to create your own LLM benchmark or use data from ours.
 
 The purpose of this library is to make it easier to evaluate the quality of LLM outputs from multiple models across a set of user selectable tasks. LLM outputs are evaluated using LLM as a judge (GPT4o).
 
 ## How it Works
 
-LLM-Eval does a pairwise preference evaluation for every possible pair of LLM outputs. Users define a set of prompts for generation, the number of samples they would like to use, and which (supported) models they would like to evaluate. We randomize the model output order (first or second) to reduce the change of positional preference. We also try to eliminate any extra language that might affect preference based on output length. Both the LLM outputs and LLM as a judge evaluations are stored in CSV files for further analysis.
+LaPET does a pairwise preference evaluation for every possible pair of LLM outputs. Users define a set of prompts for generation, the number of samples they would like to use, and which (supported) models they would like to evaluate. We randomize the model output order (first or second) to reduce the change of positional preference. We also try to eliminate any extra language that might affect preference based on output length. Both the LLM outputs and LLM as a judge evaluations are stored in CSV files for further analysis.
 
 ## Requirements
 
-The current version of LLM-Eval requires access to GPUs on a server or you can use this Google Colab Template that will work if you have a Google Colab Pro+ account. You will also need a HuggingFace account to download models and an OpenAI account to utilize LLM as a judge.
+The current version of LaPET requires access to GPUs on a server or you can use this Google Colab Template that will work if you have a Google Colab Pro+ account. You will also need a HuggingFace account to download models and an OpenAI account to utilize LLM as a judge.
 
 ## Supported Models
 
@@ -28,7 +28,7 @@ We utilize GPT-4o as the LLM evaluator (judge), which picks a winner between a p
 
 ## Getting Started
 
-You will need an A100 or H100 with at least 40GB of RAM to run LLM-Eval locally. Alternatively, you can utilize the Google Colab template if you have a Google Colab Pro+ account (use the A100).
+You will need an A100 or H100 with at least 40GB of RAM to run LaPET locally. Alternatively, you can utilize the Google Colab template if you have a Google Colab Pro+ account (use the A100).
 
 - Edit **generate.py** as needed. You can change which models you want to evaluate and change the global model parameters like temperature and max_length. You can also change the prompts to suite the tasks you want to evaluate and how many output samples you would like to generate.
 - Run **generate.py** (you will need your HuggingFace User Access Token and a local GPU with 40GB of memory. We have test NVidia A100s and H100s).
