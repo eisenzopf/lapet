@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "llm-eval"
-version = "0.6.8"
+version = "0.6.9"
 authors = [
     {name = "Jonathan Eisenzopf", email = "jonathan.eisenzopf@talkmap.com"},
 ]
