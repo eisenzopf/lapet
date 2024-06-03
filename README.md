@@ -12,7 +12,7 @@ LaPET does a pairwise preference evaluation for every possible pair of LLM outpu
 
 ## Requirements
 
-The current version of LaPET requires access to GPUs on a server or you can use this Google Colab Template that will work if you have a Google Colab Pro+ account. You will also need a HuggingFace account to download models and an OpenAI account to utilize LLM as a judge.
+The current version of LaPET requires access to GPUs on a server or you can use this [Google Colab Notebook](https://colab.research.google.com/drive/1cRfByG_-ipcuAKl_ixoPD9eFlrPxL5Pb?usp=sharing) that will work if you have a Google Colab Pro+ account. You will also need a HuggingFace account to download models and an OpenAI account to utilize LLM as a judge.
 
 ## Supported Models
 
@@ -28,7 +28,7 @@ We utilize GPT-4o as the LLM evaluator (judge), which picks a winner between a p
 
 ## Getting Started
 
-You will need an A100 or H100 with at least 40GB of RAM to run LaPET locally. Alternatively, you can utilize the Google Colab template if you have a Google Colab Pro+ account (use the A100).
+You will need an A100 or H100 with at least 40GB of RAM to run LaPET locally. Alternatively, you can utilize the [Google Colab Notebook](https://colab.research.google.com/drive/1cRfByG_-ipcuAKl_ixoPD9eFlrPxL5Pb?usp=sharing) if you have a Google Colab Pro+ account (use the A100).
 
 - Edit **generate.py** as needed. You can change which models you want to evaluate and change the global model parameters like temperature and max_length. You can also change the prompts to suite the tasks you want to evaluate and how many output samples you would like to generate.
 - Run **generate.py** (you will need your HuggingFace User Access Token and a local GPU with 40GB of memory. We have test NVidia A100s and H100s).
