@@ -39,13 +39,14 @@ class Llama2ModelHandler():
 
 class Llama31ModelHandler():
     def load_model_and_tokenizer(self, device, model_id):
-        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
             
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
-            device_map=device
+            device_map=device,
+            trust_remote_code=True
         )
         
         print(model_id + " loaded.")
