@@ -20,7 +20,11 @@ We plan on adding more models as we have time and based upon request. The librar
 
 - llama2_7b_chat
 - llama3_8b_instruct
+- llama3_1_8b_instruct
+- llama3_2_3b_instruct
 - phi_3
+- phi_3_5
+- phi_4
 - zephyr_7b_beta
 - gemma_7b
 
