@@ -17,13 +17,8 @@ class Phi4ModelHandler():
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
             
-        # Create device map for CPU offloading
-        device_map = {
-            'model.embed_tokens': 0,
-            'model.layers': 0,
-            'model.norm': 0,
-            'lm_head': 'cpu'  # Offload language model head to CPU
-        }
+        # Use simpler device mapping to keep everything on GPU except lm_head
+        device_map = "auto"
         
         # Load model with quantization and device mapping
         model = AutoModelForCausalLM.from_pretrained(
