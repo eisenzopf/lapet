@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lapet"
-version = "0.7.5"
+version = "0.8"
 authors = [
     {name = "Jonathan Eisenzopf", email = "ironbraid74@gmail.com"},
 ]
@@ -21,6 +21,7 @@ classifiers = [
 dependencies = [
     "pandas",
     "numpy",
+    "flash_attn",
     "torch>=2.3.0",
     "huggingface_hub>=0.23.0",
     "transformers==4.41.0",
