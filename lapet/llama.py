@@ -42,15 +42,19 @@ class Llama31ModelHandler():
         tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
-            
+        
         # Load the model's config first
         config = AutoConfig.from_pretrained(model_id)
         
-        # Override only the required RoPE parameters
-        #config.rope_scaling = {
-        #    "type": "dynamic",
-        #    "factor": 8.0
-        #}
+        # Set all RoPE parameters in the rope_scaling dictionary
+        config.rope_scaling = {
+            "type": "dynamic",
+            "factor": 8.0,
+            "low_freq_factor": 1.0,
+            "high_freq_factor": 4.0,
+            "original_max_position_embeddings": 8192,
+            "rope_type": "llama3"
+        }
         
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
