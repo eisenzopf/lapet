@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import huggingface_hub
-from lapet import ModelHandler, Llama2ModelHandler, Llama3ModelHandler, Phi4ModelHandler
+from lapet import ModelHandler, Llama2ModelHandler, Llama3ModelHandler,Llama31ModelHandler, Phi4ModelHandler
 
 config = {
     'batch_size': 3,
@@ -14,8 +14,8 @@ config = {
     'models': {
         'meta-llama/Llama-2-7b-chat-hf': Llama2ModelHandler,
         'meta-llama/Meta-Llama-3-8B-Instruct': Llama3ModelHandler,
-        'meta-llama/Llama-3.1-8B-Instruct': Llama3ModelHandler,
-        'meta-llama/Llama-3.2-3B-Instruct': Llama3ModelHandler,
+        'meta-llama/Llama-3.1-8B-Instruct': Llama31ModelHandler,
+        'meta-llama/Llama-3.2-3B-Instruct': Llama31ModelHandler,
         'microsoft/Phi-3-mini-4k-instruct': ModelHandler,
         'microsoft/Phi-3.5-mini-instruct': Phi4ModelHandler,
         'microsoft/phi-4-mini-instruct': Phi4ModelHandler,
