@@ -43,18 +43,9 @@ class Llama31ModelHandler():
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
             
-        # Configure the proper RoPE scaling for Llama 3.1
-        model_config = {
-            "rope_scaling": {
-                "type": "linear",
-                "factor": 4.0
-            }
-        }
-        
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
-            device_map=device,
-            config_overrides=model_config
+            device_map=device
         )
         
         print(model_id + " loaded.")
