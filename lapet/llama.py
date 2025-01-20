@@ -1,6 +1,7 @@
 import re
 import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
+import transformers
 
 from .handler import ModelHandler
 class Llama3ModelHandler():
@@ -39,29 +40,21 @@ class Llama2ModelHandler():
 
 class Llama31ModelHandler():
     def load_model_and_tokenizer(self, device, model_id):
-        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
-        if tokenizer.pad_token is None:
-            tokenizer.pad_token = tokenizer.eos_token
-        
-        # Load the model's config first
-        config = AutoConfig.from_pretrained(model_id)
-        
-        # Set all RoPE parameters in the rope_scaling dictionary
-        config.rope_scaling = {
-            "type": "dynamic",
-            "factor": 8.0,
-            "low_freq_factor": 1.0,
-            "high_freq_factor": 4.0,
-            "original_max_position_embeddings": 8192,
-            "rope_type": "llama3"
-        }
-        
-        model = AutoModelForCausalLM.from_pretrained(
-            model_id,
-            config=config,
-            device_map=device,
+        # Create pipeline with bfloat16 precision and auto device mapping
+        pipeline = transformers.pipeline(
+            "text-generation",
+            model=model_id,
+            model_kwargs={"torch_dtype": torch.bfloat16},
+            device_map="auto",
             trust_remote_code=True
         )
+        
+        # Extract tokenizer and model from pipeline
+        tokenizer = pipeline.tokenizer
+        model = pipeline.model
+        
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
         
         print(model_id + " loaded.")
         return tokenizer, model
