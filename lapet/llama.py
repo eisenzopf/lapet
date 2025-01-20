@@ -43,11 +43,11 @@ class Llama31ModelHandler():
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
             
-        # Configure the proper RoPE scaling for Llama 3.1/3.2
+        # Configure the proper RoPE scaling for Llama 3.1
         model_config = {
             "rope_scaling": {
-                "type": "dynamic",
-                "factor": 2.0
+                "type": "linear",
+                "factor": 4.0
             }
         }
         
