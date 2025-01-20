@@ -1,6 +1,6 @@
 import re
 import torch
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import AutoTokenizer, AutoModelForCausalLM, AutoConfig
 
 from .handler import ModelHandler
 class Llama3ModelHandler():
@@ -43,8 +43,18 @@ class Llama31ModelHandler():
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
             
+        # Load the model's config first
+        config = AutoConfig.from_pretrained(model_id)
+        
+        # Override only the required RoPE parameters
+        #config.rope_scaling = {
+        #    "type": "dynamic",
+        #    "factor": 8.0
+        #}
+        
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
+            config=config,
             device_map=device,
             trust_remote_code=True
         )
