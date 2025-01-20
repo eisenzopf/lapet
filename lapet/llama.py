@@ -40,21 +40,16 @@ class Llama2ModelHandler():
 
 class Llama31ModelHandler():
     def load_model_and_tokenizer(self, device, model_id):
-        # Create pipeline with bfloat16 precision and auto device mapping
-        pipeline = transformers.pipeline(
-            "text-generation",
-            model=model_id,
-            model_kwargs={"torch_dtype": torch.bfloat16},
-            device_map="auto",
-            trust_remote_code=True
-        )
-        
-        # Extract tokenizer and model from pipeline
-        tokenizer = pipeline.tokenizer
-        model = pipeline.model
-        
+        tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
         if tokenizer.pad_token is None:
             tokenizer.pad_token = tokenizer.eos_token
+        
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            torch_dtype=torch.bfloat16,
+            device_map=device,
+            trust_remote_code=True
+        )
         
         print(model_id + " loaded.")
         return tokenizer, model
