@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lapet"
-version = "0.8.12"
+version = "0.9.0"
 authors = [
     {name = "Jonathan Eisenzopf", email = "ironbraid74@gmail.com"},
 ]
@@ -24,7 +24,7 @@ dependencies = [
     "flash_attn",
     "torch>=2.3.0",
     "huggingface_hub>=0.23.0",
-    "transformers==4.48.0",
+    "transformers==4.52.3",
     "auto-gptq",
     "autoawq",
     "openai",
