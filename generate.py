@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 import huggingface_hub
-from lapet import ModelHandler, Llama2ModelHandler, Llama3ModelHandler,Llama31ModelHandler, Phi4ModelHandler
+from lapet import ModelHandler, Llama2ModelHandler, Llama3ModelHandler,Llama31ModelHandler, Phi4ModelHandler, GemmaModelHandler
 
 config = {
-    'batch_size': 3,
+    'batch_size': 5,
     'max_length': 1500,
     'max_new_tokens': 500,
     'temperature': 0.6,
@@ -19,9 +19,10 @@ config = {
         'microsoft/Phi-3-mini-4k-instruct': ModelHandler,
         'microsoft/Phi-3.5-mini-instruct': Phi4ModelHandler,
         'microsoft/phi-4-mini-instruct': Phi4ModelHandler,
-
         'HuggingFaceH4/zephyr-7b-beta': ModelHandler,
-        'google/gemma-7b': ModelHandler
+        'google/gemma-7b': ModelHandler,
+        'google/gemma-3-1b-it': GemmaModelHandler,
+        'google/gemma-3-4b-it': GemmaModelHandler
     },
     'system_prompt': "You are a helpful AI assistant that generates answers to questions. You will be provided with transcripts of conversations between customers and service agents. Your task is to follow the instruction and output a response from each conversation in a valid JSON format. Focus on provided concise outputs that could be useful for follow-up actions and ensure that your outputs are directly relevant to the discussed topics. This prompt is meant to ensure that you understand the essence of the customer's concerns and can articulate it succinctly in a structured format that is easy for both human and machine processing. Continue with this approach for the upcoming conversations.",
     'prompts': [

@@ -6,6 +6,13 @@ from .handler import ModelHandler
 
 class GemmaModelHandler():
     def load_model_and_tokenizer(self, device, model_id):
+        # Enable TensorFloat32 for better performance
+        torch.set_float32_matmul_precision('high')
+        
+        # Configure dynamo to prevent cache limit errors
+        torch._dynamo.config.cache_size_limit = 64  # Increase cache size
+        torch._dynamo.config.suppress_errors = True  # Suppress dynamo errors
+        
         # Load tokenizer
         tokenizer = AutoTokenizer.from_pretrained(model_id)
         if tokenizer.pad_token is None:
