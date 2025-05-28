@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lapet"
-version = "0.9.0"
+version = "0.9.1"
 authors = [
     {name = "Jonathan Eisenzopf", email = "ironbraid74@gmail.com"},
 ]

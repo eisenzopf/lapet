@@ -27,6 +27,8 @@ We plan on adding more models as we have time and based upon request. The librar
 - phi_4
 - zephyr_7b_beta
 - gemma_7b
+- gemma_3_1b_it
+- gemma_3_4b_it
 
 We utilize GPT-4o as the LLM evaluator (judge), which picks a winner between a pair of LLM generated outputs.
 
