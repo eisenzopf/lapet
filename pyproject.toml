@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lapet"
-version = "0.9.4"
+version = "0.9.5"
 authors = [
     {name = "Jonathan Eisenzopf", email = "ironbraid74@gmail.com"},
 ]
@@ -21,15 +21,15 @@ classifiers = [
 dependencies = [
     "pandas",
     "numpy",
-    "flash_attn",
     "torch>=2.6.0",
     "huggingface_hub>=0.23.0",
     "transformers==4.52.3",
-    "auto-gptq",
-    "autoawq",
-    "openai",
+    "openai>=1.0.0",
     'importlib-metadata; python_version<"3.10"',
 ]
+
+[project.optional-dependencies]
+cuda = ["flash_attn", "auto-gptq", "autoawq"]
 
 [project.urls]
 Homepage = "https://github.com/eisenzopf/lapet"
