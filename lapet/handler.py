@@ -4,6 +4,7 @@ import torch
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import pandas as pd
 import numpy as np
+from datasets import load_dataset as load_dataset_from_hf
 
 class ModelHandler:
     def __init__(self, config):
@@ -25,18 +26,28 @@ class ModelHandler:
             {"role": "system", "content": self.system_prompt },
             {"role": "user", "content": text },
         ]
-        prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-        inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.device)
-        outputs = ""
-        outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
-        responses = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+        if hasattr(self.model, 'completion'):
+            prompt, responses = self.model.completion(
+                messages=messages,
+                max_tokens=self.max_new_tokens,
+                temperature=self.temperature,
+                top_p=self.top_p,
+            )
+        else:
+            prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            inputs = self.tokenizer(prompt, return_tensors="pt", padding=True, truncation=True, max_length=self.max_length).to(self.device)
+            outputs = ""
+            outputs = self.model.generate(**inputs, max_new_tokens=self.max_new_tokens, do_sample=True, temperature=self.temperature, top_p=self.top_p)
+            responses = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
         return prompt, responses
 
     def load_dataset(self, dataset):
         """Loads an external CSV dataset via URL and prepares a dataframe for storing the output"""
         print("Loading dataset...")
-        df = pd.read_csv(dataset)
-        df = pd.DataFrame(df)
+        df = load_dataset_from_hf("csv", data_files=dataset)
+        df = df['train'].to_pandas()
         conversation_ids = df['conversation_id'].unique()
         sampled_ids = np.random.choice(conversation_ids, size=self.samples, replace=False)
         conversation_texts = {}

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import huggingface_hub
-from lapet import ModelHandler, Llama2ModelHandler, Llama3ModelHandler,Llama31ModelHandler, Phi4ModelHandler, GemmaModelHandler
+from lapet import ModelHandler, Llama2ModelHandler, Llama3ModelHandler,Llama31ModelHandler, Phi4ModelHandler, GemmaModelHandler, LiteLLMModelHandler
 
 config = {
     'batch_size': 5,
@@ -22,7 +22,13 @@ config = {
         'HuggingFaceH4/zephyr-7b-beta': ModelHandler,
         'google/gemma-7b': ModelHandler,
         'google/gemma-3-1b-it': GemmaModelHandler,
-        'google/gemma-3-4b-it': GemmaModelHandler
+        'google/gemma-3-4b-it': GemmaModelHandler,
+        # 'ollama_chat/llama3.1:8b': LiteLLMModelHandler,
+        # 'ollama_chat/phi3:14b': LiteLLMModelHandler,
+        # 'ollama_chat/phi4-mini:latest': LiteLLMModelHandler,
+        # 'ollama_chat/gemma3:12b': LiteLLMModelHandler,
+        # 'together_ai/meta-llama/Llama-4-Scout-17B-16E-Instruct': LiteLLMModelHandler,
+        # 'together_ai/meta-llama/Llama-3.3-70B-Instruct-Turbo-Free': LiteLLMModelHandler,
     },
     'system_prompt': "You are a helpful AI assistant that generates answers to questions. You will be provided with transcripts of conversations between customers and service agents. Your task is to follow the instruction and output a response from each conversation in a valid JSON format. Focus on provided concise outputs that could be useful for follow-up actions and ensure that your outputs are directly relevant to the discussed topics. This prompt is meant to ensure that you understand the essence of the customer's concerns and can articulate it succinctly in a structured format that is easy for both human and machine processing. Continue with this approach for the upcoming conversations.",
     'prompts': [
@@ -35,7 +41,8 @@ config = {
     ]
 }
 
-huggingface_hub.login()
+# huggingface_hub.login()
+# retrieve token from HF_TOKEN environment variable
 handler = ModelHandler(config)
 responses = handler.process_dataset()
 responses.to_csv('eval_data.csv', index=False)
