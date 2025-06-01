@@ -3,3 +3,4 @@ from .phi import Phi4ModelHandler
 from .handler import ModelHandler
 from .gemma import GemmaModelHandler
 from .judge import LLMJudge
+from .litellm import LiteLLMModelHandler

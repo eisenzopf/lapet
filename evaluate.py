@@ -5,9 +5,9 @@ from lapet import LLMJudge
 config = {
     "judge": {
         "name": "openai",
-        "organization": os.environ["OPENAI_ORG"],
-        "project": os.environ["OPENAI_PROJECT"],
-        "api_key": os.environ["OPENAI_KEY"]
+        "organization": os.getenv("OPENAI_ORG"),
+        "project": os.getenv("OPENAI_PROJECT"),
+        "api_key": os.getenv("OPENAI_API_KEY")
     }
 }
 
